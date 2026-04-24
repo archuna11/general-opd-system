@@ -11,7 +11,6 @@ python app.py
 Then open http://127.0.0.1:5000
 
 ## Roles & Demo Logins
-- Admin: admin / admin123
 - Doctor: doc / doc123
 - Lab: lab / lab123
 - IT Exec: it / it123
