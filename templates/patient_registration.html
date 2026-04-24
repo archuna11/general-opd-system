@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block body %}
+  <h1 style="text-align:center; color:#2d5a2f;">Patient Registration</h1>
+
+  <!-- Box/Card for form -->
+  <div class="card" style="max-width:650px; margin:40px auto;">
+    <form method="post">
+      <div class="row">
+        <!-- Auto-generated UHID -->
+        <div class="col-2">
+          <label>UHID</label>
+          <input name="uhid" type="text" value="{{ new_uhid }}" readonly 
+                 style="background:#F3F4F6; font-weight:bold; color:#3a86d7;">
+        </div>
+
+        <div class="col-2">
+          <label>Name</label>
+          <input name="name" type="text" required placeholder="Full name">
+        </div>
+
+        <div class="col-2">
+          <label>Age</label>
+          <input name="age" type="number" min="0" placeholder="Age">
+        </div>
+
+        <div class="col-2">
+          <label>Gender</label>
+          <select name="gender" required>
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="col-2">
+          <label>Phone number</label>
+          <input name="phone" type="text" placeholder="+91-XXXXXXXXXX">
+        </div>
+
+        <div class="col-2">
+          <label>Email</label>
+          <input name="email" type="email" placeholder="email@example.com">
+        </div>
+
+        <div class="col-2">
+          <label>Address</label>
+          <input name="address" type="text" placeholder="Address">
+        </div>
+
+        <div class="col-2">
+          <label>Marital Status</label>
+          <select name="marital_status">
+            <option value="">Select</option>
+            <option>Married</option>
+            <option>Unmarried</option>
+          </select>
+        </div>
+
+        <div class="col-2">
+          <label>Occupation</label>
+          <input name="occupation" type="text" placeholder="Occupation">
+        </div>
+
+        <!-- ✅ New IST Date & Time field -->
+        <div class="col-2">
+          <label>Registration Date & Time</label>
+          <input type="text" name="created_at" value="{{ now }}" readonly
+                 style="background:#F3F4F6; font-weight:bold; color:#3a86d7;">
+        </div>
+      </div>
+
+      <!-- Register button -->
+      <div style="margin-top:20px; text-align:center;">
+        <button class="btn" type="submit">Register</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

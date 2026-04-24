@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lab Order History</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="bg-[#F3F4F6] min-h-screen">
+<div class="max-w-6xl mx-auto p-6">
+    {% with messages = get_flashed_messages() %}
+    {% endwith %}
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-[#2d5a2f]">Order History</h1>
+            <p class="text-[#3a86d7]">Department: <span class="font-medium capitalize">general</span></p>
+        </div>
+        <div class="space-x-4">
+            <a href="{{ url_for('lab_request_page') }}" class="text-[#3a86d7] font-medium hover:underline">New Request</a>
+        </div>
+    </div>
+
+    <!-- Table -->
+    {% if lab_requests %}
+    <div class="bg-white rounded-xl shadow overflow-x-auto">
+        <table class="min-w-full text-sm divide-y divide-gray-200">
+            <thead class="bg-gray-50 text-[#2d5a2f]">
+                <tr>
+                    <th class="px-4 py-2 text-left">Order ID</th>
+                    <th class="px-4 py-2 text-left">Patient UHID</th>
+                    <th class="px-4 py-2 text-left">Dept</th>
+                    <th class="px-4 py-2 text-left">Priority</th>
+                    <th class="px-4 py-2 text-left">Created</th>
+                    <th class="px-4 py-2 text-left">Status</th>
+                    <th class="px-4 py-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for req in lab_requests %}
+                <tr>
+                    <td class="px-4 py-2 text-[#2d5a2f]">{{ req.id }}</td>
+                    <td class="px-4 py-2 text-[#2d5a2f]">{{ patient_map[req.patient_id] }}</td>
+                    <td class="px-4 py-2 text-[#2d5a2f] capitalize">general</td>
+                    <td class="px-4 py-2 text-[#2d5a2f] capitalize">{{ req.priority }}</td>
+                    <td class="px-4 py-2 text-[#2d5a2f]">{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="px-4 py-2">
+                        {% if req.status == 'Pending' %}
+                        <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">Pending</span>
+                        {% elif req.status == 'Completed' %}
+                        <span class="bg-green-200 text-green-800 px-2 py-1 rounded-full text-sm font-medium">Completed</span>
+                        {% else %}
+                        <span class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm font-medium">{{ req.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2 space-x-2">
+                        <a href="{{ url_for('lab_view_results', order_id=req.id) }}" class="text-[#3a86d7] hover:underline flex items-center">
+                            <i data-feather="eye" class="w-4 h-4 mr-1"></i> View
+                        </a>
+                        <a href="{{ url_for('lab_serve_report', order_id=req.id) }}" class="text-[#3a86d7] hover:underline flex items-center">
+                            <i data-feather="download" class="w-4 h-4 mr-1"></i> Download
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="mt-6 text-[#2d5a2f] italic text-center">
+        No orders submitted yet from this client.
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    feather.replace()
+</script>
+</body>
+</html>

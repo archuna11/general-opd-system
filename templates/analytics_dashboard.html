@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block body %}
+<div style="background:#F3F4F6; padding:20px; border-radius:10px;">
+
+    <h2 style="color:#2d5a2f; margin-bottom:20px;">Analytics & Dashboard</h2>
+
+    <!-- Row 1: Summary Cards -->
+    <div style="display:flex; gap:20px; margin-bottom:30px; flex-wrap:wrap;">
+        <div class="dash-card">
+            <h3>👥 Total Patients</h3>
+            <p>{{ total_patients }}</p>
+        </div>
+        <div class="dash-card">
+            <h3>♀️ Total Female</h3>
+            <p>{{ total_females }}</p>
+        </div>
+        <div class="dash-card">
+            <h3>♂️ Total Male</h3>
+            <p>{{ total_males }}</p>
+        </div>
+    </div>
+
+    <!-- Row 2: Age + Gender -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:30px;">
+        <div class="dash-box">
+            <h4>Age Distribution</h4>
+            <img src="data:image/png;base64,{{ age_chart }}" style="width:100%; border-radius:10px;">
+        </div>
+        <div class="dash-box">
+            <h4>Gender Ratio</h4>
+            <img src="data:image/png;base64,{{ gender_chart }}" style="width:100%; border-radius:10px;">
+        </div>
+    </div>
+
+     <!-- Row 3: Drugs + Temperature -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:30px;">
+        <div class="dash-box">
+            <h4>Top Prescribed Drugs</h4>
+            <img src="data:image/png;base64,{{ drug_chart }}" style="width:100%; border-radius:10px;">
+        </div>
+        <div class="dash-box">
+            <h4>Abnormal Temperature</h4>
+            <img src="data:image/png;base64,{{ temperature_chart }}" style="width:100%; border-radius:10px;">
+        </div>
+    </div>
+
+   <!-- Row 4: Centered SpO2 with same size as other charts -->
+<div style="display:flex; justify-content:center; margin-bottom:30px;">
+    <div class="dash-box" style="width:100%; max-width:500px; height:350px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <h4>Abnormal SpO₂</h4>
+        <img src="data:image/png;base64,{{ spo2_chart }}" 
+             style="width:100%; height:100%; object-fit:contain; border-radius:10px;">
+    </div>
+</div>
+
+
+<!-- Styles remain the same -->
+<style>
+    .dash-card {
+        flex: 1;
+        min-width: 180px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .dash-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    .dash-card h3 {
+        color: #3a86d7;
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+    .dash-card p {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2d5a2f;
+        margin: 0;
+    }
+    .dash-box {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .dash-box h4 {
+        color: #3a86d7;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block body %}
+<h1 style="text-align:center; color:#2d5a2f; margin-bottom:20px;">Prescription</h1>
+
+<!-- Patient Info -->
+<div class="card" style="background:white; padding:16px; border-radius:8px; box-shadow:0px 2px 5px rgba(0,0,0,0.1); margin-bottom:20px;">
+  <h2 style="color:#2d5a2f;"><span class="icon">📝</span>Patient</h2>
+  <div class="row">
+    <div class="col-3"><label>UHID</label><input id="rx_uhid" type="text" value="{{ patient.uhid if patient else '' }}" readonly></div>
+    <div class="col-3"><label>Name</label><input id="rx_name" type="text" value="{{ patient.name if patient else '' }}" readonly></div>
+    <div class="col-3"><label>Age</label><input id="rx_age" type="text" value="{{ patient.age if patient else '' }}" readonly></div>
+    <div class="col-3"><label>Gender</label><input id="rx_gender" type="text" value="{{ patient.gender if patient else '' }}" readonly></div>
+  </div>
+</div>
+
+<form method="post" id="rxForm" action="{{ url_for('prescription') }}">
+  <input type="hidden" name="rx_uhid" value="{{ patient.uhid if patient else '' }}">
+
+  <!-- Drugs Section -->
+  <div class="card" style="background:white; padding:16px; border-radius:8px; box-shadow:0px 2px 5px rgba(0,0,0,0.1); margin-bottom:20px;">
+    <h2 style="color:#2d5a2f;"><span class="icon">💊</span>Drugs</h2>
+
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; align-items:flex-end;">
+      <input type="text" id="drug_name" placeholder="Drug Name" style="flex:2;">
+      <input type="text" id="drug_dose" placeholder="Dose" style="flex:1;">
+      <select id="drug_freq" style="flex:1;">
+        <option>OD</option><option>BD</option><option>TID</option><option>QID</option><option>HS</option><option>SOS</option>
+      </select>
+      <input type="text" id="drug_duration" placeholder="Duration" style="flex:1;">
+      <select id="drug_instr" style="flex:1;">
+        <option>After food</option><option>Before food</option>
+      </select>
+      <button type="button" class="btn-outline" id="btnAddDrug" style="background:#3a86d7; color:white; border:none; border-radius:6px; padding:6px 12px;">＋</button>
+    </div>
+
+    <textarea id="drugsText" name="drugs" placeholder="All prescribed drugs will appear here..." readonly style="width:100%; height:120px; margin-bottom:12px;"></textarea>
+  </div>
+
+  <!-- Advice / Lifestyle -->
+  <div class="card" style="background:white; padding:16px; border-radius:8px; box-shadow:0px 2px 5px rgba(0,0,0,0.1); margin-bottom:20px;">
+    <h2 style="color:#2d5a2f;"><span class="icon">📋</span>Advice / Lifestyle Modifications</h2>
+    <textarea name="advice" rows="4" style="width:100%;"></textarea>
+  </div>
+
+  <!-- Follow-up Date -->
+  <div class="card" style="background:white; padding:16px; border-radius:8px; box-shadow:0px 2px 5px rgba(0,0,0,0.1); margin-bottom:20px;">
+    <h2 style="color:#2d5a2f;"><span class="icon">📅</span>Follow-up Date</h2>
+    <input type="date" name="follow_up" style="width:auto;">
+  </div>
+
+  <div style="text-align:center; margin-top:20px;">
+  <button type="submit" name="action" value="next" class="btn" style="background:#2d5a2f; color:white; border:none; border-radius:6px; padding:10px 20px;">
+  Save & Next
+</button>
+
+</div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateDrugsText(){
+  const name = document.getElementById('drug_name').value.trim();
+  const dose = document.getElementById('drug_dose').value.trim();
+  const freq = document.getElementById('drug_freq').value;
+  const dur = document.getElementById('drug_duration').value.trim();
+  const instr = document.getElementById('drug_instr').value;
+
+  if(!name) { alert("Enter drug name"); return; }
+
+  const entry = `${name} — ${dose || ''}, ${freq}, ${dur || ''}, ${instr}`;
+  const textarea = document.getElementById('drugsText');
+  textarea.value += (textarea.value ? "\n" : "") + entry;
+
+  // Clear input fields
+  document.getElementById('drug_name').value = "";
+  document.getElementById('drug_dose').value = "";
+  document.getElementById('drug_duration').value = "";
+  document.getElementById('drug_freq').selectedIndex = 0;
+  document.getElementById('drug_instr').selectedIndex = 0;
+}
+
+document.getElementById('btnAddDrug').addEventListener('click', updateDrugsText);
+</script>
+{% endblock %}

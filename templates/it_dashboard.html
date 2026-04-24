@@ -1,0 +1,22 @@
+
+{% extends "base.html" %}
+{% block body %}
+  <h1>IT Executive - Analytics</h1>
+  <div class="row">
+    <div class="card col-2">
+      <h2>Patients</h2>
+      <div class="muted">Total registered</div>
+      <div style="font-size:28px;font-weight:700;">{{ patients_count }}</div>
+    </div>
+    <div class="card col-2">
+      <h2>Lab Requests</h2>
+      <div class="muted">Pending / Completed</div>
+      <div style="font-size:28px;font-weight:700;">{{ labs_pending }} / {{ labs_done }}</div>
+    </div>
+    <div class="card col-2">
+      <h2>Prescriptions</h2>
+      <div class="muted">Total saved</div>
+      <div style="font-size:28px;font-weight:700;">{{ rx_count }}</div>
+    </div>
+  </div>
+{% endblock %}

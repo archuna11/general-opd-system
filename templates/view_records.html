@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+  /* Override container to full width for this page */
+  .container {
+    max-width: 100% !important;
+    padding: 10px !important;
+    margin: 0 auto !important;
+  }
+
+  h1 {
+    color: #2d5a2f;
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  /* Small, centered search bar */
+  .search-container {
+    text-align: center;
+    margin: 15px 0;
+  }
+
+  .search-input {
+    padding: 6px 10px;
+    width: 200px; /* shorter width */
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  .search-btn {
+    background: #2d5a2f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+
+  .search-btn:hover {
+    background: #1f3d1f;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 6px;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+    white-space: normal;
+    word-break: break-word;
+    color: var(--text); /* same color for all values */
+  }
+
+  th {
+    background: #3a86d7;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  tr:nth-child(even) {
+    background: #F3F4F6;
+  }
+
+  tr:hover {
+    background: #d0ebff;
+  }
+
+  .drug-item {
+    display: block;
+    color: var(--text); /* same as other text */
+    margin-bottom: 2px;
+    font-size: 0.9em;
+  }
+
+  .nav-buttons {
+    margin: 20px 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<h1>View Records</h1>
+
+<div class="search-container">
+  <form method="get" action="{{ url_for('view_records') }}">
+    <input type="text" name="q" placeholder="Search by UHID or Name" value="{{ request.args.get('q','') }}" class="search-input">
+    <button type="submit" class="search-btn">Search</button>
+  </form>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>UHID</th>
+      <th>Patient Name</th>
+      <th>Age</th>
+      <th>Gender</th>
+      <th>BP</th>
+      <th>Temp</th>
+      <th>SPO2</th>
+      <th>Pulse Rate</th>
+      <th>Resp Rate</th>
+      <th>Provisional Diagnosis</th>
+      <th>Drugs</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in records %}
+    <tr>
+      <td>{{ r.uhid }}</td>
+      <td>{{ r.name }}</td>
+      <td>{{ r.age }}</td>
+      <td>{{ r.gender }}</td>
+      <td>{{ r.bp }}</td>
+      <td>{{ r.temp }}</td>
+      <td>{{ r.spo2 }}</td>
+      <td>{{ r.pulse }}</td>
+      <td>{{ r.rr }}</td>
+      <td>{{ r.provisional_dx }}</td>
+      <td>
+        {% if r.drugs %}
+          {% for drug in r.drugs.split('\n') %}
+            <span class="drug-item">{{ drug.strip() }}</span>
+          {% endfor %}
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="11" style="text-align:center;">No records found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="nav-buttons">
+  {% if back_uhid %}
+    <a href="{{ url_for('patient_prescription', uhid=back_uhid) }}" class="btn-custom">&laquo; Back</a>
+  {% else %}
+    <span></span>
+  {% endif %}
+  
+  <a href="{{ url_for('analytics_dashboard') }}" class="btn-custom">Next &raquo;</a>
+</div>
+{% endblock %}

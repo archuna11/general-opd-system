@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Consultation</h1>
+
+<div class="card">
+  <h2><span class="icon">🧍</span>Patient Demographics</h2>
+
+  <!-- First Row: UHID + Fetch Button -->
+  <div class="row" style="align-items:flex-end; margin-bottom:8px;">
+    <div class="col-2">
+      <label>UHID</label>
+      <input id="c_uhid" type="text" placeholder="Enter UHID">
+    </div>
+    <div class="col-2" style="margin-top:24px;">
+      <button class="btn" id="btnFetch">Fetch by UHID</button>
+    </div>
+  </div>
+
+  <!-- Second Row: Name, Age, Gender, Date -->
+  <div class="row">
+    <div class="col-2"><label>Name</label><input id="c_name" type="text" readonly></div>
+    <div class="col-2"><label>Age</label><input id="c_age" type="text" readonly></div>
+    <div class="col-2"><label>Gender</label><input id="c_gender" type="text" readonly></div>
+    <div class="col-2"><label>Date</label><input id="c_date" type="text" readonly></div>
+  </div>
+</div>
+
+<form method="post" id="consForm">
+  <input type="hidden" name="c_uhid_hidden" id="c_uhid_hidden">
+  <input type="hidden" name="lab_tests_json" id="lab_tests_json">
+
+
+
+
+<!-- Last Consultation Summary -->
+<div class="card" id="lastConsultationCard" style="display:none; margin-top:12px;">
+  <h2><span class="icon">📋</span>Last Consultation Summary</h2>
+  <div><strong>Date:</strong> <span id="lc_date"></span></div>
+  <div><strong>Chief Complaints:</strong> <span id="lc_cc"></span></div>
+  <div><strong>Past Medical History:</strong> <span id="lc_pmh"></span></div>
+  <div><strong>Past Medication History:</strong> <span id="lc_pmxh"></span></div>
+  <div><strong>Allergy:</strong> <span id="lc_allergy"></span></div>
+  <div><strong>Provisional Diagnosis:</strong> <span id="lc_dx"></span></div>
+</div>
+
+
+
+<!-- Past Consultations Table -->
+<div class="card" id="consultationHistoryCard" style="display:none; margin-top:12px;">
+  <h2><span class="icon">📅</span>Past Consultations</h2>
+  <table style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background:#3a86d7; color:white;">
+        <th style="padding:6px;">Date</th>
+        <th style="padding:6px;">Chief Complaints</th>
+        <th style="padding:6px;">Past History</th>
+        <th style="padding:6px;">Drugs</th>
+        <th style="padding:6px;">Provisional Dx</th>
+      </tr>
+    </thead>
+    <tbody id="consultationHistoryBody">
+      <!-- Filled dynamically -->
+    </tbody>
+  </table>
+</div>
+
+
+
+
+  <!-- Vitals -->
+  <div class="card">
+    <h2><span class="icon">❤️</span>Vitals</h2>
+    <div class="row">
+      <div class="col-3"><label>Blood Pressure</label><input name="v_bp" id="v_bp" type="text" placeholder="120/80"></div>
+      <div class="col-3"><label>Temperature (°F)</label><input name="v_temp" id="v_temp" type="number" step="0.1" placeholder="98.6"></div>
+      <div class="col-3"><label>SPO2 (%)</label><input name="v_spo2" id="v_spo2" type="number" min="0" max="100" placeholder="98"></div>
+      <div class="col-3"><label>Pulse Rate (bpm)</label><input name="v_pulse" id="v_pulse" type="number" placeholder="72"></div>
+      <div class="col-3"><label>Respiratory Rate</label><input name="v_rr" id="v_rr" type="number" placeholder="16"></div>
+    </div>
+  </div>
+
+  <!-- Chief Complaints -->
+  <div class="card">
+    <h2><span class="icon">💬</span>Chief Complaints</h2>
+    <textarea name="cc" rows="3" style="width:100%;"></textarea>
+  </div>
+
+  <!-- Past History -->
+  <div class="card">
+    <h2><span class="icon">📜</span>Past History</h2>
+    <div><label>Past Medical History</label><textarea name="pmh" rows="2" style="width:100%;"></textarea></div>
+    <div><label>Past Medication History</label><textarea name="pmxh" rows="2" style="width:100%;"></textarea></div>
+    <div><label>Surgical History</label><textarea name="surgical" rows="2" style="width:100%;"></textarea></div>
+    <div><label>Family History</label><textarea name="family" rows="2" style="width:100%;"></textarea></div>
+    <div><label>Allergy</label><textarea name="allergy" rows="2" style="width:100%;"></textarea></div>
+    <div id="obgyn_section" style="display:none;"><label>Obstetric/Gynecological History</label><textarea name="obgyn" rows="2" style="width:100%;"></textarea></div>
+    <div><label>Social History (Habits, Exposures)</label><textarea name="social" rows="2" style="width:100%;"></textarea></div>
+  </div>
+
+  <!-- Systemic Examination -->
+  <div class="card">
+    <h2><span class="icon">🩺</span>Systemic Examination</h2>
+    <div class="row">
+      <div class="col-3"><label>Cardiovascular</label><input name="cardio" type="text"></div>
+      <div class="col-3"><label>Respiratory</label><input name="resp" type="text"></div>
+      <div class="col-3"><label>Abdomen</label><input name="abdomen" type="text"></div>
+      <div class="col-3"><label>CNS</label><input name="cns" type="text"></div>
+      <div class="col-3"><label>Musculoskeletal</label><input name="msk" type="text"></div>
+    </div>
+  </div>
+
+  <!-- Provisional Diagnosis -->
+  <div class="card">
+    <h2><span class="icon">🔍</span>Provisional Diagnosis</h2>
+    <textarea name="provisional_dx" rows="3" style="width:100%;"></textarea>
+  </div>
+
+  <div style="margin-top:12px;">
+    <button class="btn" id="btnSaveNext">Save &amp; Next (Prescription)</button>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+function fillDemo(p){
+    document.getElementById('c_name').value = p.patient.name || '';
+    document.getElementById('c_age').value = p.patient.age || '';
+    document.getElementById('c_gender').value = p.patient.gender || '';
+
+    const ist = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+    const dateStr = ist.toISOString().split('T')[0];
+    document.getElementById('c_date').value = dateStr;
+
+    document.getElementById('obgyn_section').style.display = (p.patient.gender === "Female") ? "block" : "none";
+    document.getElementById('c_uhid_hidden').value = p.patient.uhid;
+}
+
+document.getElementById('btnFetch').addEventListener('click', async function() {
+    const uhid = document.getElementById('c_uhid').value.trim();
+    if(!uhid){ alert("Enter UHID"); return; }
+
+    // Fetch patient demographics
+    const r = await fetch('/api/patient/' + encodeURIComponent(uhid));
+    if(r.ok){
+        const data = await r.json();
+        fillDemo(data);
+    } else {
+        alert("Patient not found. Please register first.");
+        return;
+    }
+
+    // Fetch last consultation for this patient
+    const rc = await fetch('/api/consultations/last/' + encodeURIComponent(uhid));
+    if(rc.ok){
+        const cons = await rc.json();
+        if(cons && Object.keys(cons).length > 0){
+            document.getElementById('lastConsultationCard').style.display = "block";
+            document.getElementById('lc_date').innerText = cons.created_at || '';
+            document.getElementById('lc_cc').innerText = cons.cc || '';
+            document.getElementById('lc_pmh').innerText = cons.pmh || '';
+            document.getElementById('lc_pmxh').innerText = cons.pmxh || '';
+            document.getElementById('lc_allergy').innerText = cons.allergy || '';
+            document.getElementById('lc_dx').innerText = cons.provisional_dx || '';
+        } else {
+            document.getElementById('lastConsultationCard').style.display = "none";
+        }
+    }
+
+    // Fetch all consultations for this patient
+    const allConsRes = await fetch('/api/consultations/all/' + encodeURIComponent(uhid));
+    if(allConsRes.ok){
+        const allCons = await allConsRes.json();
+        const tbody = document.getElementById('consultationHistoryBody');
+        tbody.innerHTML = "";
+
+        if(allCons && allCons.length > 0){
+            document.getElementById('consultationHistoryCard').style.display = "block";
+
+            allCons.forEach(cons => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding:6px;">${cons.created_at || ''}</td>
+                    <td style="padding:6px;">${cons.cc || ''}</td>
+                    <td style="padding:6px;">${cons.pmh || ''} ${cons.pmxh || ''}</td>
+                    <td style="padding:6px;">${cons.drugs || ''}</td>
+                    <td style="padding:6px;">${cons.provisional_dx || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            document.getElementById('consultationHistoryCard').style.display = "none";
+        }
+    }
+});
+
+document.getElementById('btnSaveNext').addEventListener('click', function(e){
+    e.preventDefault();
+    const uhid = document.getElementById('c_uhid').value.trim();
+    if(!uhid){ alert("Fetch patient first"); return; }
+
+    document.getElementById('consForm').submit();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block body %}
+<div style="background:#F3F4F6; padding:30px; min-height:100vh; display:flex; justify-content:center; align-items:flex-start;">
+  <div style="width:80%; max-width:900px;">
+
+    <h1 style="text-align:center; color:#2d5a2f; margin-bottom:20px;">Patient Prescription Summary</h1>
+
+    <!-- Patient Demographics -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">🧍</span> Patient Demographics</h2>
+      <p><strong>UHID:</strong> {{ patient.uhid }}</p>
+      <p><strong>Name:</strong> {{ patient.name }}</p>
+      <p><strong>Age:</strong> {{ patient.age }}</p>
+      <p><strong>Gender:</strong> {{ patient.gender }}</p>
+      <p><strong>Date:</strong> {{ consultation.created_at.strftime('%Y-%m-%d') if consultation else '' }}</p>
+    </div>
+
+    <!-- Vitals -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">❤️</span> Vitals</h2>
+      <p><strong>Blood Pressure:</strong> {{ consultation.v_bp }}</p>
+      <p><strong>Temperature (°F):</strong> {{ consultation.v_temp }}</p>
+      <p><strong>SPO2 (%):</strong> {{ consultation.v_spo2 }}</p>
+      <p><strong>Pulse Rate (bpm):</strong> {{ consultation.v_pulse }}</p>
+      <p><strong>Respiratory Rate:</strong> {{ consultation.v_rr }}</p>
+    </div>
+
+    <!-- Chief Complaints -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">💬</span> Chief Complaints</h2>
+      <p>{{ consultation.cc }}</p>
+    </div>
+
+    <!-- Past History -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">📜</span> Past History</h2>
+      <p><strong>Past Medical History:</strong> {{ consultation.pmh }}</p>
+      <p><strong>Past Medication History:</strong> {{ consultation.pmxh }}</p>
+      <p><strong>Surgical History:</strong> {{ consultation.surgical }}</p>
+      <p><strong>Family History:</strong> {{ consultation.family }}</p>
+      <p><strong>Allergy:</strong> {{ consultation.allergy }}</p>
+      {% if patient.gender == "Female" %}
+        <p><strong>Obstetric/Gynecological History:</strong> {{ consultation.obgyn }}</p>
+      {% endif %}
+      <p><strong>Social History (Habits, Exposures):</strong> {{ consultation.social }}</p>
+    </div>
+
+    <!-- Systemic Examination -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">🩺</span> Systemic Examination</h2>
+      <p><strong>Cardiovascular:</strong> {{ consultation.cardio }}</p>
+      <p><strong>Respiratory:</strong> {{ consultation.resp }}</p>
+      <p><strong>Abdomen:</strong> {{ consultation.abdomen }}</p>
+      <p><strong>CNS:</strong> {{ consultation.cns }}</p>
+      <p><strong>Musculoskeletal:</strong> {{ consultation.msk }}</p>
+    </div>
+
+    <!-- Provisional Diagnosis -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">🔍</span> Provisional Diagnosis</h2>
+      <p>{{ consultation.provisional_dx }}</p>
+    </div>
+
+    <!-- Drugs -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">💊</span> Drugs</h2>
+      <pre style="white-space:pre-wrap;">{{ prescription.drugs }}</pre>
+    </div>
+
+    <!-- Advice -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">📋</span> Advice / Lifestyle Modifications</h2>
+      <p>{{ prescription.advice }}</p>
+    </div>
+
+    <!-- Follow-up -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="color:#3a86d7;"><span class="icon">📅</span> Follow-up Date</h2>
+      <p>{{ prescription.follow_up }}</p>
+    </div>
+
+    <!-- Buttons -->
+    <div style="text-align:center; margin-top:30px;">
+      <button onclick="window.print()" 
+              style="background:#2d5a2f; color:white; border:none; border-radius:6px; padding:10px 20px; display:block; margin:10px auto;">
+        🖨️ Print
+      </button>
+      <a href="{{ url_for('download_prescription', prescription_id=prescription.id) }}" 
+         style="background:#3a86d7; color:white; border:none; border-radius:6px; padding:10px 20px; text-decoration:none; display:block; margin:10px auto;">
+        ⬇️ Download
+      </a>
+      <a href="{{ url_for('prescription') }}" 
+         style="background:#6c757d; color:white; border:none; border-radius:6px; padding:10px 20px; text-decoration:none; display:block; margin:10px auto;">
+        ← Back
+      </a>
+      <a href="{{ url_for('view_records') }}" 
+         style="background:#198754; color:white; border:none; border-radius:6px; padding:10px 20px; text-decoration:none; display:block; margin:10px auto;">
+        Next →
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
