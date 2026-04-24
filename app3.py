@@ -25,24 +25,36 @@ from werkzeug.exceptions import BadRequest
 from radiology_bp import radiology_bp
 
 
+
+
 # admin/admin123 doc/doc123 lab/lab123 it/it123 -- usernames and passwords
-
-
-
-
+import os
+from flask import Flask
 
 app = Flask(__name__, instance_relative_config=True)
-app.config['SECRET_KEY'] = 'change_this_secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'app.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
+
+# Secret key
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
+
+# Paths
 os.makedirs(app.instance_path, exist_ok=True)
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-os.makedirs("downloads", exist_ok=True) # Ensure downloads directory exists
+
+UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
+DOWNLOAD_FOLDER = os.path.join(app.root_path, 'downloads')
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
+
+# Database
+db_path = os.path.join(app.instance_path, 'app.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 db = SQLAlchemy(app)
-
-
 
 
 # New: everything under /radiology
@@ -1228,7 +1240,9 @@ def inject_user():
     return {"current_user": current_user()}
 
 # ----------------- Run -----------------
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
